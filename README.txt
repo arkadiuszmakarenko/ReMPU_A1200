@@ -1,4 +1,4 @@
-CON				MPU				GRID		STM32
+CON				MPU				GRID		  STM32
 1				PB4				X4			PB4
 2				PB5				X5			PB5
 3				PB6				X6			PB6
