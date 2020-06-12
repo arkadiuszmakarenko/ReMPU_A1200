@@ -30,3 +30,8 @@ CON				MPU				GRID		  STM32
 29				PC6				Y0			PB0
 30				GND							
 31				PC7CAPS_LED					PB15
+
+
+KB_DATA                     PB12
+KB_CLK                      PB13
+KB_RESET                    PB14
