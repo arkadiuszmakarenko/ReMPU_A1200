@@ -62,6 +62,8 @@ void Error_Handler(void);
 #define PD5_LALT_13_GPIO_Port GPIOC
 #define PD7_LAMI_14_Pin GPIO_PIN_14
 #define PD7_LAMI_14_GPIO_Port GPIOC
+#define PB2_X2_7_Pin GPIO_PIN_15
+#define PB2_X2_7_GPIO_Port GPIOC
 #define PA0_Y14_15_Pin GPIO_PIN_0
 #define PA0_Y14_15_GPIO_Port GPIOA
 #define PA1_Y13_16_Pin GPIO_PIN_1
@@ -82,8 +84,6 @@ void Error_Handler(void);
 #define PC6_Y0_29_GPIO_Port GPIOB
 #define PD0_RSHF_6_Pin GPIO_PIN_1
 #define PD0_RSHF_6_GPIO_Port GPIOB
-#define PB2_X2_7_Pin GPIO_PIN_2
-#define PB2_X2_7_GPIO_Port GPIOB
 #define PD3_CTRL_11_Pin GPIO_PIN_10
 #define PD3_CTRL_11_GPIO_Port GPIOB
 #define PD4_LSHIFT_12_Pin GPIO_PIN_11
