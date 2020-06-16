@@ -3,14 +3,13 @@
 #include "stm32f1xx.h"
 #include "main.h"
 
-keyboard_t keyboard = {0};
-keyboard_t previous_keyboard = {0};
+special_keys_t special_keys;
 
-uint32_t keyboard_matrix[6] = {0};
 
 uint16_t Read_Y(void)
 {
 	uint16_t Y_val = 0x8000;
+
 	Y_val = Y_val|HAL_GPIO_ReadPin(PC6_Y0_29_GPIO_Port,PC6_Y0_29_Pin);
 	Y_val = Y_val|(HAL_GPIO_ReadPin(PC5_Y1_28_GPIO_Port,PC5_Y1_28_Pin)<<1);
 	Y_val = Y_val|(HAL_GPIO_ReadPin(PC4_Y2_27_GPIO_Port,PC4_Y2_27_Pin)<<2);
@@ -28,55 +27,73 @@ uint16_t Read_Y(void)
 	Y_val = Y_val|(HAL_GPIO_ReadPin(PA0_Y14_15_GPIO_Port,PA0_Y14_15_Pin)<<14);
 
 	return ~Y_val;
-
-
-
 }
 
 
-int* Read_Keyboard(void)
+
+
+keyboard_t Read_Keyboard(void)
 {
 
+	keyboard_t keyboard = {0};
 
 	//X2 - Y0-Y14
-
 	HAL_GPIO_WritePin(PB2_X2_7_GPIO_Port,PB2_X2_7_Pin,GPIO_PIN_RESET);
-
-	keyboard_matrix[0] = Read_Y();
-
+		keyboard.keyboard_matrix[0] = Read_Y();
 	HAL_GPIO_WritePin(PB2_X2_7_GPIO_Port,PB2_X2_7_Pin,GPIO_PIN_SET);
 
 	//X3 - Y0-Y14
 	HAL_GPIO_WritePin(PB3_X3_5_GPIO_Port,PB3_X3_5_Pin,GPIO_PIN_RESET);
-
-	keyboard_matrix[1] = Read_Y();
-
+		keyboard.keyboard_matrix[1] = Read_Y();
 	HAL_GPIO_WritePin(PB3_X3_5_GPIO_Port,PB3_X3_5_Pin,GPIO_PIN_SET);
 
 	//X4 - Y0-Y14
 	HAL_GPIO_WritePin(PB4_X4_1_GPIO_Port,PB4_X4_1_Pin,GPIO_PIN_RESET);
-
-	keyboard_matrix[2] = Read_Y();
-
+		keyboard.keyboard_matrix[2] = Read_Y();
 	HAL_GPIO_WritePin(PB4_X4_1_GPIO_Port,PB4_X4_1_Pin,GPIO_PIN_SET);
 
 	//X5 - Y0-Y14
 	HAL_GPIO_WritePin(PB5_X5_2_GPIO_Port,PB5_X5_2_Pin,GPIO_PIN_RESET);
-	keyboard_matrix[3] = Read_Y();
+		keyboard.keyboard_matrix[3] = Read_Y();
 	HAL_GPIO_WritePin(PB5_X5_2_GPIO_Port,PB5_X5_2_Pin,GPIO_PIN_SET);
 
 	//X6 - Y0-Y14
 	HAL_GPIO_WritePin(PB6_X6_3_GPIO_Port,PB6_X6_3_Pin,GPIO_PIN_RESET);
-	keyboard_matrix[4] = Read_Y();
+		keyboard.keyboard_matrix[4] = Read_Y();
 	HAL_GPIO_WritePin(PB6_X6_3_GPIO_Port,PB6_X6_3_Pin,GPIO_PIN_SET);
 
 	//X7 - Y0-Y14
 	HAL_GPIO_WritePin(PB7_X7_4_GPIO_Port,PB7_X7_4_Pin,GPIO_PIN_RESET);
-	keyboard_matrix[5] = Read_Y();
+		keyboard.keyboard_matrix[5] = Read_Y();
 	HAL_GPIO_WritePin(PB7_X7_4_GPIO_Port,PB7_X7_4_Pin,GPIO_PIN_SET);
 
+	//special keys
+	keyboard.special_keys.lalt = HAL_GPIO_ReadPin(PD5_LALT_13_GPIO_Port, PD5_LALT_13_Pin)^1;
+	keyboard.special_keys.lami = HAL_GPIO_ReadPin(PD7_LAMI_14_GPIO_Port,PD7_LAMI_14_Pin)^1;
+	keyboard.special_keys.lshf = HAL_GPIO_ReadPin(PD4_LSHIFT_12_GPIO_Port, PD4_LSHIFT_12_Pin)^1;
+	keyboard.special_keys.ctrl = HAL_GPIO_ReadPin(PD3_CTRL_11_GPIO_Port, PD3_CTRL_11_Pin)^1;
+	keyboard.special_keys.ralt = HAL_GPIO_ReadPin(PD1_RALT_8_GPIO_Port, PD1_RALT_8_Pin)^1;
+	keyboard.special_keys.rami = HAL_GPIO_ReadPin(PD2_RAMI_10_GPIO_Port, PD2_RAMI_10_Pin)^1;
+	keyboard.special_keys.rshf = HAL_GPIO_ReadPin(PD0_RSHF_6_GPIO_Port, PD0_RSHF_6_Pin)^1;
 
-	return keyboard_matrix;
+
+	return keyboard;
+}
+
+//Mappings must be valid, we don't expect situation that X,Y pair would never have valid return value.
+uint8_t MapKeyboard(uint8_t X,uint8_t Y)
+{
+	int i = 0;
+
+	for (i = 0; i < KEYCODE_TAB_SIZE; i++)
+	{
+		if (amigacode[i][0]==X && amigacode[i][1]==Y )
+		{
+							return amigacode[i][2];
+							break;
+		}
+	}
+	return 0;
 }
 
 

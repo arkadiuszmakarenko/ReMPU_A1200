@@ -44,8 +44,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-  int count;
-  int * pointer;
+    keyboard_t keyboard;
 
 /* USER CODE END PV */
 
@@ -73,7 +72,7 @@ int main(void)
 
   /* MCU Configuration--------------------------------------------------------*/
 
-  /* Reset of all peripherals, Initializes the Flash interface and the /Systick. */
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 
   /* USER CODE BEGIN Init */
@@ -91,10 +90,11 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-
+  uint8_t code ;
+  code = MapKeyboard(2,5);
 
   /* USER CODE END 2 */
- count = 0;
+
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
@@ -102,9 +102,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	Read_Keyboard();
-
-
+	keyboard  = Read_Keyboard();
 
 
   }
@@ -163,11 +161,11 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(PB2_X2_7_GPIO_Port, PB2_X2_7_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, KB_DATA_Pin|KB_CLK_Pin|KB_RESET_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, KB_DATA_Pin|KB_CLK_Pin|KB_RESET_Pin|PC7_CAPS_LED_31_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, PC7_CAPS_LED_31_Pin|PB3_X3_5_Pin|PB4_X4_1_Pin|PB5_X5_2_Pin 
-                          |PB6_X6_3_Pin|PB7_X7_4_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOB, PB3_X3_5_Pin|PB4_X4_1_Pin|PB5_X5_2_Pin|PB6_X6_3_Pin 
+                          |PB7_X7_4_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : PD5_LALT_13_Pin */
   GPIO_InitStruct.Pin = PD5_LALT_13_Pin;
@@ -215,10 +213,15 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PC7_CAPS_LED_31_Pin PB3_X3_5_Pin PB5_X5_2_Pin PB6_X6_3_Pin 
-                           PB7_X7_4_Pin */
-  GPIO_InitStruct.Pin = PC7_CAPS_LED_31_Pin|PB3_X3_5_Pin|PB5_X5_2_Pin|PB6_X6_3_Pin 
-                          |PB7_X7_4_Pin;
+  /*Configure GPIO pin : PC7_CAPS_LED_31_Pin */
+  GPIO_InitStruct.Pin = PC7_CAPS_LED_31_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(PC7_CAPS_LED_31_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PB3_X3_5_Pin PB5_X5_2_Pin PB6_X6_3_Pin PB7_X7_4_Pin */
+  GPIO_InitStruct.Pin = PB3_X3_5_Pin|PB5_X5_2_Pin|PB6_X6_3_Pin|PB7_X7_4_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
