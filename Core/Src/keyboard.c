@@ -156,7 +156,7 @@ void ProcessKeyboard(keyboard_t *keyboard)
 
 		if (keyboard_raw[0].keyboard_matrix[2]==keyboard_raw[1].keyboard_matrix[2] && keyboard_raw[1].keyboard_matrix[2]==keyboard_raw[2].keyboard_matrix[2])
 		{
-			keyboard->keyboard_matrix[1]=keyboard_raw[0].keyboard_matrix[1];
+			keyboard->keyboard_matrix[2]=keyboard_raw[0].keyboard_matrix[2];
 		}
 
 		if (keyboard_raw[0].keyboard_matrix[3]==keyboard_raw[1].keyboard_matrix[3] && keyboard_raw[1].keyboard_matrix[3]==keyboard_raw[2].keyboard_matrix[3])

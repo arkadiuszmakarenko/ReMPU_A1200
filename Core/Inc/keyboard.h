@@ -1,32 +1,8 @@
 #include <stdint.h>
 #include <inttypes.h>
 #include <stdbool.h>
+#include "main.h"
 
-
-#define KEY_PRESSED_MAX 10
-#define DEBOUNCE_KEYBOARD 3
-
-
-typedef struct {
-	uint8_t lami;
-	uint8_t lalt;
-	uint8_t lshf;
-	uint8_t ctrl;
-	uint8_t rami;
-	uint8_t ralt;
-	uint8_t rshf;
-} special_keys_t;
-
-typedef struct{
-special_keys_t special_keys;
-uint8_t keyboard_codes[KEY_PRESSED_MAX];
-uint16_t keyboard_matrix[6];
-} keyboard_t;
-
-typedef struct{
-	uint16_t keyboard_matrix[6];
-	special_keys_t special_keys;
-} keyboard_raw_t;
 
 #define KEYCODE_TAB_SIZE 86 //Still 2 to find codes for
 //0x70

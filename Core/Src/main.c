@@ -24,6 +24,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "keyboard.h"
+#include "amiga.h"
 
 /* USER CODE END Includes */
 
@@ -90,7 +91,8 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-
+  DWT_Init();
+  amikb_startup();
   keyboard_t keyboard;
 
   /* USER CODE END 2 */
@@ -107,6 +109,7 @@ int main(void)
 	  memset(&keyboard,0,sizeof(keyboard));
 	  memset(&keyboard.keyboard_codes,0xFF,sizeof(keyboard.keyboard_codes));
 	  ProcessKeyboard(&keyboard);
+	  amikb_process(&keyboard);
 
 
   }

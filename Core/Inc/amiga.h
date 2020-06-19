@@ -1,8 +1,5 @@
-
+#include "main.h"
 #include <inttypes.h>
-#include "keyboard.h"
-
-
 
 
 extern void amikb_startup(void);
