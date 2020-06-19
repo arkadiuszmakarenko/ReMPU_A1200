@@ -33,6 +33,7 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -88,12 +89,12 @@ void Error_Handler(void);
 #define PD3_CTRL_11_GPIO_Port GPIOB
 #define PD4_LSHIFT_12_Pin GPIO_PIN_11
 #define PD4_LSHIFT_12_GPIO_Port GPIOB
-#define KB_DATA_Pin GPIO_PIN_12
-#define KB_DATA_GPIO_Port GPIOB
-#define KB_CLK_Pin GPIO_PIN_13
-#define KB_CLK_GPIO_Port GPIOB
-#define KB_RESET_Pin GPIO_PIN_14
-#define KB_RESET_GPIO_Port GPIOB
+#define KBD_DATA_Pin GPIO_PIN_12
+#define KBD_DATA_GPIO_Port GPIOB
+#define KBD_CLOCK_Pin GPIO_PIN_13
+#define KBD_CLOCK_GPIO_Port GPIOB
+#define KBD_RESET_Pin GPIO_PIN_14
+#define KBD_RESET_GPIO_Port GPIOB
 #define PC7_CAPS_LED_31_Pin GPIO_PIN_15
 #define PC7_CAPS_LED_31_GPIO_Port GPIOB
 #define PA8_Y6_23_Pin GPIO_PIN_8

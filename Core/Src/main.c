@@ -90,8 +90,8 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-  uint8_t code ;
-  code = MapKeyboard(2,5);
+
+  keyboard_t keyboard;
 
   /* USER CODE END 2 */
 
@@ -102,7 +102,11 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	keyboard  = Read_Keyboard();
+
+	  //clear
+	  memset(&keyboard,0,sizeof(keyboard));
+	  memset(&keyboard.keyboard_codes,0xFF,sizeof(keyboard.keyboard_codes));
+	  ProcessKeyboard(&keyboard);
 
 
   }
@@ -161,7 +165,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(PB2_X2_7_GPIO_Port, PB2_X2_7_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, KB_DATA_Pin|KB_CLK_Pin|KB_RESET_Pin|PC7_CAPS_LED_31_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, KBD_DATA_Pin|KBD_CLOCK_Pin|KBD_RESET_Pin|PC7_CAPS_LED_31_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, PB3_X3_5_Pin|PB4_X4_1_Pin|PB5_X5_2_Pin|PB6_X6_3_Pin 
@@ -206,8 +210,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : KB_DATA_Pin KB_CLK_Pin KB_RESET_Pin */
-  GPIO_InitStruct.Pin = KB_DATA_Pin|KB_CLK_Pin|KB_RESET_Pin;
+  /*Configure GPIO pins : KBD_DATA_Pin KBD_CLOCK_Pin KBD_RESET_Pin */
+  GPIO_InitStruct.Pin = KBD_DATA_Pin|KBD_CLOCK_Pin|KBD_RESET_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
