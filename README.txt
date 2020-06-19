@@ -1,3 +1,6 @@
+Project is based on blue pill stm32f103 mpu. 
+
+
 PA0-WKUP	n/a	n/a	Input mode	Pull-up	n/a	PA0_Y14_15	true
 PA1	n/a	n/a	Input mode	Pull-up	n/a	PA1_Y13_16	true
 PA2	n/a	n/a	Input mode	Pull-up	n/a	PA2_Y12_17	true
