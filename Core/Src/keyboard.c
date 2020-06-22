@@ -14,8 +14,8 @@ uint8_t MapKey(uint8_t X,uint8_t Y)
 	{
 		if (amigacode[i][0]==X && amigacode[i][1]==Y )
 		{
-							return amigacode[i][2];
-							break;
+			return amigacode[i][2];
+			break;
 		}
 	}
 	return 0;
@@ -55,6 +55,7 @@ void MapKeys(keyboard_t *keyboard)
 
 uint16_t Read_Y(void)
 {
+	//There is one bit not set, as we reverse value after read.
 	uint16_t Y_val = 0x8000;
 
 	Y_val = Y_val|HAL_GPIO_ReadPin(PC6_Y0_29_GPIO_Port,PC6_Y0_29_Pin);
@@ -127,88 +128,102 @@ void Read_Keyboard(keyboard_raw_t *keyboard)
 
 void ProcessKeyboard(keyboard_t *keyboard)
 {
-
+	uint8_t debouce_counter = 0;
+	uint8_t matrix_counter = 0;
+	uint8_t special_OK = 1;
 	keyboard_raw_t keyboard_raw[DEBOUNCE_KEYBOARD];
 
 	//debounce routine
 	//read 3 times data on keyboard
-	uint8_t debouce_counter = 0;
+
 	for(debouce_counter = 0;debouce_counter < DEBOUNCE_KEYBOARD;debouce_counter++)
 	{
 		 Read_Keyboard(&keyboard_raw[debouce_counter]);
 		 HAL_Delay(1);
-
 	}
 
-	//if at this point hardcoded for 3, need to automate it.
+		//if at this point hardcoded for 3, need to automate it.
+		//iterate over each debouce data
+
+
+	if (DEBOUNCE_KEYBOARD == 1)
+	{
+		keyboard->keyboard_matrix[0]=keyboard_raw[0].keyboard_matrix[0];
+		keyboard->keyboard_matrix[1]=keyboard_raw[0].keyboard_matrix[1];
+		keyboard->keyboard_matrix[2]=keyboard_raw[0].keyboard_matrix[2];
+		keyboard->keyboard_matrix[3]=keyboard_raw[0].keyboard_matrix[3];
+		keyboard->keyboard_matrix[4]=keyboard_raw[0].keyboard_matrix[4];
+		keyboard->keyboard_matrix[5]=keyboard_raw[0].keyboard_matrix[5];
+
+		keyboard->special_keys.ctrl = keyboard_raw[0].special_keys.ctrl;
+		keyboard->special_keys.lalt = keyboard_raw[0].special_keys.lalt;
+		keyboard->special_keys.lami = keyboard_raw[0].special_keys.lami;
+		keyboard->special_keys.lshf = keyboard_raw[0].special_keys.lshf;
+		keyboard->special_keys.ralt = keyboard_raw[0].special_keys.ralt;
+		keyboard->special_keys.rami = keyboard_raw[0].special_keys.rami;
+		keyboard->special_keys.rshf = keyboard_raw[0].special_keys.rshf;
+		MapKeys(keyboard);
+		return;
+	}
 
 
 
-		if (keyboard_raw[0].keyboard_matrix[0]==keyboard_raw[1].keyboard_matrix[0] && keyboard_raw[1].keyboard_matrix[0]==keyboard_raw[2].keyboard_matrix[0])
+	//debounce matrix
+
+	for(matrix_counter = 0; matrix_counter < 6; matrix_counter++ )
+	{
+		uint16_t temp_keyrow = keyboard_raw[0].keyboard_matrix[matrix_counter];
+		uint8_t row_OK = 1;
+
+		for(debouce_counter = 1;debouce_counter < DEBOUNCE_KEYBOARD;debouce_counter++)
 		{
-			keyboard->keyboard_matrix[0]=keyboard_raw[0].keyboard_matrix[0];
+			if (temp_keyrow != keyboard_raw[debouce_counter].keyboard_matrix[matrix_counter] )
+			{
+				row_OK = 0;
+				break;
+			}
+			temp_keyrow = keyboard_raw[debouce_counter].keyboard_matrix[matrix_counter];
 		}
 
-		if (keyboard_raw[0].keyboard_matrix[1]==keyboard_raw[1].keyboard_matrix[1] && keyboard_raw[1].keyboard_matrix[1]==keyboard_raw[2].keyboard_matrix[1])
+		if (row_OK==1)
 		{
-			keyboard->keyboard_matrix[1]=keyboard_raw[0].keyboard_matrix[1];
+			keyboard->keyboard_matrix[matrix_counter] = keyboard_raw[0].keyboard_matrix[matrix_counter];
 		}
+	}
 
-		if (keyboard_raw[0].keyboard_matrix[2]==keyboard_raw[1].keyboard_matrix[2] && keyboard_raw[1].keyboard_matrix[2]==keyboard_raw[2].keyboard_matrix[2])
-		{
-			keyboard->keyboard_matrix[2]=keyboard_raw[0].keyboard_matrix[2];
-		}
-
-		if (keyboard_raw[0].keyboard_matrix[3]==keyboard_raw[1].keyboard_matrix[3] && keyboard_raw[1].keyboard_matrix[3]==keyboard_raw[2].keyboard_matrix[3])
-		{
-			keyboard->keyboard_matrix[3]=keyboard_raw[0].keyboard_matrix[3];
-		}
-
-		if (keyboard_raw[0].keyboard_matrix[4]==keyboard_raw[1].keyboard_matrix[4] && keyboard_raw[1].keyboard_matrix[4]==keyboard_raw[2].keyboard_matrix[4])
-		{
-			keyboard->keyboard_matrix[4]=keyboard_raw[0].keyboard_matrix[4];
-		}
-
-		if (keyboard_raw[0].keyboard_matrix[5]==keyboard_raw[1].keyboard_matrix[5] && keyboard_raw[1].keyboard_matrix[5]==keyboard_raw[2].keyboard_matrix[5])
-		{
-			keyboard->keyboard_matrix[5]=keyboard_raw[0].keyboard_matrix[5];
-		}
+	//debounce special keys
+	uint8_t temp_lami = keyboard_raw[0].special_keys.lami;
+	uint8_t temp_lalt = keyboard_raw[0].special_keys.lalt;
+	uint8_t temp_lshf = keyboard_raw[0].special_keys.lshf;
+	uint8_t temp_ctrl = keyboard_raw[0].special_keys.ctrl;
+	uint8_t temp_rami = keyboard_raw[0].special_keys.rami;
+	uint8_t temp_ralt = keyboard_raw[0].special_keys.ralt;
+	uint8_t temp_rshf = keyboard_raw[0].special_keys.rshf;
 
 
-		if (keyboard_raw[0].special_keys.ctrl == keyboard_raw[1].special_keys.ctrl && keyboard_raw[1].special_keys.ctrl == keyboard_raw[2].special_keys.ctrl)
-		{
-			keyboard->special_keys.ctrl = keyboard_raw[0].special_keys.ctrl;
-		}
 
-		if (keyboard_raw[0].special_keys.lalt == keyboard_raw[1].special_keys.lalt && keyboard_raw[1].special_keys.lalt == keyboard_raw[2].special_keys.lalt)
+	for(debouce_counter = 1;debouce_counter < DEBOUNCE_KEYBOARD;debouce_counter++)
+	{
+		if (temp_lami != keyboard_raw[debouce_counter].special_keys.lami || temp_lalt != keyboard_raw[debouce_counter].special_keys.lalt
+			|| temp_lshf != keyboard_raw[debouce_counter].special_keys.lshf || temp_ctrl != keyboard_raw[debouce_counter].special_keys.ctrl
+			|| temp_rami != keyboard_raw[debouce_counter].special_keys.rami || temp_ralt != keyboard_raw[debouce_counter].special_keys.ralt
+			|| temp_rshf != keyboard_raw[debouce_counter].special_keys.rshf)
 		{
-			keyboard->special_keys.lalt = keyboard_raw[0].special_keys.lalt;
+			special_OK = 0;
+			break;
 		}
+	}
 
-		if (keyboard_raw[0].special_keys.lami == keyboard_raw[1].special_keys.lami && keyboard_raw[1].special_keys.lami == keyboard_raw[2].special_keys.lami)
-		{
-			keyboard->special_keys.lami = keyboard_raw[0].special_keys.lami;
-		}
-
-		if (keyboard_raw[0].special_keys.lshf == keyboard_raw[1].special_keys.lshf && keyboard_raw[1].special_keys.lshf == keyboard_raw[2].special_keys.lshf)
-		{
-			keyboard->special_keys.lshf = keyboard_raw[0].special_keys.lshf;
-		}
-
-		if (keyboard_raw[0].special_keys.ralt == keyboard_raw[1].special_keys.ralt && keyboard_raw[1].special_keys.ralt == keyboard_raw[2].special_keys.ralt)
-		{
-			keyboard->special_keys.ralt = keyboard_raw[0].special_keys.ralt;
-		}
-
-		if (keyboard_raw[0].special_keys.rami == keyboard_raw[1].special_keys.rami && keyboard_raw[1].special_keys.rami == keyboard_raw[2].special_keys.rami)
-		{
-			keyboard->special_keys.rami = keyboard_raw[0].special_keys.rami;
-		}
-
-		if (keyboard_raw[0].special_keys.rshf == keyboard_raw[1].special_keys.rshf && keyboard_raw[1].special_keys.rshf == keyboard_raw[2].special_keys.rshf)
-		{
-			keyboard->special_keys.rshf = keyboard_raw[0].special_keys.rshf;
-		}
+	if (special_OK == 1)
+	{
+		keyboard->special_keys.ctrl = keyboard_raw[0].special_keys.ctrl;
+		keyboard->special_keys.lalt = keyboard_raw[0].special_keys.lalt;
+		keyboard->special_keys.lami = keyboard_raw[0].special_keys.lami;
+		keyboard->special_keys.lshf = keyboard_raw[0].special_keys.lshf;
+		keyboard->special_keys.ralt = keyboard_raw[0].special_keys.ralt;
+		keyboard->special_keys.rami = keyboard_raw[0].special_keys.rami;
+		keyboard->special_keys.rshf = keyboard_raw[0].special_keys.rshf;
+	}
 
 	//Map data
 		MapKeys(keyboard);

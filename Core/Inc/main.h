@@ -38,8 +38,8 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-#define KEY_PRESSED_MAX 10
-#define DEBOUNCE_KEYBOARD 3
+#define KEY_PRESSED_MAX 32
+#define DEBOUNCE_KEYBOARD 5
 
 
 typedef struct {

@@ -4,8 +4,7 @@
 #include "main.h"
 
 
-#define KEYCODE_TAB_SIZE 86 //Still 2 to find codes for
-//0x70
+#define KEYCODE_TAB_SIZE 89
 
 
 
@@ -13,13 +12,14 @@
 static const uint8_t amigacode[KEYCODE_TAB_SIZE][3] =
 {
 	{2,	14,		0x45 }, // ESC
-	{2,	13,		0x68 }, // NUMLOCK & CLEAR NUM(
+	{2,	13,		0x5A }, // NUM(
 	{2,	12,		0x50 }, // F1
 	{2,	11,		0x51 }, // F2
 	{2,	10,		0x52 }, // F3
 	{2,	9,		0x53 }, // F4
 	{2,	8,		0x54 }, // F5
 	{2,	6,		0x55 }, // F6
+	{2,	7,		0x5B }, // NUM)
 	{2,	5,		0x5C }, // NUM/
 	{2,	4,		0x56 }, // F7
 	{2,	3,		0x57 }, // F8
@@ -57,7 +57,7 @@ static const uint8_t amigacode[KEYCODE_TAB_SIZE][3] =
 	{4,	4,		0x19 }, // P
 	{4,	3,		0x1A }, // [{
 	{4,	2,		0x1B }, // }]
-	{4,	1,		0x2B }, // RETURN
+	{4,	1,		0x44 }, // RETURN
 	{4,	0,		0x4F }, // CURSOR L
 
 
@@ -73,11 +73,11 @@ static const uint8_t amigacode[KEYCODE_TAB_SIZE][3] =
 	{5,	5,		0x28 }, // L
 	{5, 4,		0x29 }, // :;
 	{5,	3,		0x2A }, // "'
-	//5,2  EUR ?? // Y2
+	{5,	2,		0x2B }, // EUR EMPTY BUTTON NEAR RETURN
 	{5,	1,		0x46 }, // DEL
 	{5,	0,		0x4E }, // CURSOR R
 
-	//EUL
+	{6, 14,		0x30 }, //EUL EMPTY BUTTON NEAR SHIFT
 	{6,	13,		0x31 }, // Z
 	{6,	12,		0x32 }, // X
 	{6,	11,		0x33 }, // C
@@ -98,11 +98,11 @@ static const uint8_t amigacode[KEYCODE_TAB_SIZE][3] =
 	{7,	12,		0x3F }, // NUM 9
 	{7,	11,		0x2F }, // NUM 6
 	{7,	10,		0x1F }, // NUM 3
-	{7,	9,		0x38 }, // NUM ,
+	{7,	9,		0x3C }, // NUM ,
 	{7,	8,		0x3E }, // NUM 8
 	{7,	7,		0x2E }, // NUM 5
 	{7,	6,		0x1E }, // NUM 2
-	{7,	5,		0x44 }, // <Enter>
+	{7,	5,		0x43 }, // <Enter>
 	{7,	4,		0x3D }, // NUM 7
 	{7,	3,		0x2D }, // NUM 4
 	{7,	2,		0x1D }, // NUM 1

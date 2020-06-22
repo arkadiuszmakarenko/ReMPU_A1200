@@ -19,9 +19,6 @@ typedef enum {
 static keyboard_t prevkeycode;
 
 static unsigned char prev_keycode = 0xff;
-static unsigned char capslk = 0;
-static unsigned char numlk = 0;
-static unsigned char scrolllk = 0;
 
 static void amikb_direction(kbd_dir dir);
 static void amikb_send(uint8_t code, int press);
@@ -52,12 +49,7 @@ void amikb_startup(void)
 void amikb_gpio_init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStruct;
-
-
-
 	//__HAL_RCC_GPIOB_CLK_ENABLE();
-
-
 	HAL_GPIO_WritePin(GPIOB,
 		KBD_CLOCK_Pin |
 		KBD_DATA_Pin  |
@@ -109,113 +101,18 @@ static void amikb_direction(kbd_dir dir)
 static void amikb_send(uint8_t keycode, int press)
 {
 	int i;
-	if (keycode == 0x62 || keycode == 0x68 || keycode == 0x1c) // Caps Lock, Num Lock or Scroll Lock Pressed or Released
-	{
+	//if (keycode == 0x62 || keycode == 0x68 || keycode == 0x1c) // Caps Lock, Num Lock or Scroll Lock Pressed or Released
+	//{
 		// caps lock doesn't get a key release event when the key is released
 		// but rather when the caps lock is toggled off again
 		// But what about num lock?
 
-		switch (keycode)
-		{
-			case 0x62: // CAPS LOCK LED
-				if (!capslk)
-				{
-					if (press)
-					{
-						prev_keycode = 0;
-						break;
-					}
-					else
-					{
-						capslk = 1;
-						prev_keycode = 0;
-						return;
-					}
-				}
-				else
-				{
-					if (press)
-					{
-						prev_keycode = 0;
-						return;
-					}
-					else
-					{
 
-						capslk = 0;
-						prev_keycode = 0;
-						break;
-					}
-				}
-				break;
-			case 0x68: // NUM LOCK LED
-				if (!numlk)
-				{
-					if (press)
-					{
-						prev_keycode = 0;
-						break;
-					}
-					else
-					{
-						numlk = 1;
-						prev_keycode = 0;
-						return;
-					}
-				}
-				else
-				{
-					if (press)
-					{
-						prev_keycode = 0;
-						return;
-					}
-					else
-					{
-						numlk = 0;
-						prev_keycode = 0;
-						break;
-					}
-				}
-				break;
-			case 0x1c: // SCROLL LOCK LED
-				if (!scrolllk)
-				{
-					if (press)
-					{
-						prev_keycode = 0;
-						break;
-					}
-					else
-					{
-						// Toggle for next time press
-						scrolllk = 1;
-						prev_keycode = 0;
-						return;
-					}
-				}
-				else
-				{
-					if (press)
-					{
-						prev_keycode = 0;
-						return;
-					}
-					else
-					{
-						scrolllk = 0;
-						prev_keycode = 0;
-						break;
-					}
-				}
-				break;
-			default:
-				{
-					return;
-				}
-				break;
+		if (keycode == 0x62 && press == 1)
+		{
+			HAL_GPIO_TogglePin(PC7_CAPS_LED_31_GPIO_Port, PC7_CAPS_LED_31_Pin);
 		}
-	}
+
 
 	// keycode bit transfer order: 6 5 4 3 2 1 0 7 (7 is pressed flag)
 	keycode = (keycode << 1) | (~press & 1);
@@ -311,10 +208,7 @@ void amikb_reset(void)
 	HAL_GPIO_WritePin(KBD_RESET_GPIO_Port, KBD_RESET_Pin, GPIO_PIN_SET);   // Set KBD_RESET pin
 	HAL_GPIO_WritePin(KBD_CLOCK_GPIO_Port, KBD_CLOCK_Pin, GPIO_PIN_SET);   // Set KBD_CLOCK pin
 	prev_keycode = 0xff;
-	capslk = 0;
-	numlk = 0;
-	scrolllk = 0;
-
+	HAL_GPIO_WritePin(PC7_CAPS_LED_31_GPIO_Port, PC7_CAPS_LED_31_Pin, GPIO_PIN_SET);
 }
 
 // ****************************
@@ -332,78 +226,58 @@ bool amikb_reset_check(void)
 
 void amikb_process(keyboard_t *data)
 {
-	static int maybe_reset = 0;
 	int i;
 	int j;
+
+	//Check for CTRL+AMIGA+AMIGA reset
+	if(data->special_keys.ctrl == 1 && data->special_keys.lami ==1 && data->special_keys.rami == 1)
+	{
+		amikb_reset();
+	}
 
 
 
 	// ----------------------------------------------- LEFT
 
 	// LEFT SHIFT
-	if (prevkeycode.special_keys.lshf != data->special_keys.lshf)
+	if (data->special_keys.lshf!=0xFF && (prevkeycode.special_keys.lshf != data->special_keys.lshf))
 	{
 		prevkeycode.special_keys.lshf = data->special_keys.lshf;
 		amikb_send(0x60, data->special_keys.lshf);
 	}
 
 	// LEFT ALT
-	if (prevkeycode.special_keys.lalt != data->special_keys.lalt)
+	if (data->special_keys.lalt != 0xFF && (prevkeycode.special_keys.lalt != data->special_keys.lalt))
 	{
 		prevkeycode.special_keys.lalt = data->special_keys.lalt;
 		amikb_send(0x64, data->special_keys.lalt);
-
-		if (prevkeycode.special_keys.lalt == 1)
-		{
-			maybe_reset++;
-			//DBG_V("MAY BE RESET (LEFT ALT)??? %d\r\n", maybe_reset);
-		}
-		else
-		if (maybe_reset > 0)
-			maybe_reset--;
 	}
 
-	// LEFT CTRL
-	if (prevkeycode.special_keys.ctrl != data->special_keys.ctrl)
+	// CTRL
+	if (data->special_keys.ctrl != 0xFF && (prevkeycode.special_keys.ctrl != data->special_keys.ctrl))
 	{
 		prevkeycode.special_keys.ctrl = data->special_keys.ctrl;
 		amikb_send(0x63,  data->special_keys.ctrl);
-
-		if (prevkeycode.special_keys.ctrl == 1)
-		{
-			maybe_reset++;
-		}
-		else
-		if (maybe_reset > 0)
-			maybe_reset--;
 	}
 
 	// LEFT GUI
-	if (prevkeycode.special_keys.lami != data->special_keys.lami)
+	if (data->special_keys.lami != 0xFF && (prevkeycode.special_keys.lami != data->special_keys.lami))
 	{
 		prevkeycode.special_keys.lami = data->special_keys.lami;
-
 		amikb_send(0x66, data->special_keys.lami);
-		if (data->special_keys.lami == 1)
-		{
-			maybe_reset++;
-		}
-		else
-		if (maybe_reset > 0)
-			maybe_reset--;
 	}
 
 	// ----------------------------------------------- RIGHT
 
 	// RIGHT SHIFT
-	if (prevkeycode.special_keys.rshf != data->special_keys.rshf)
+	if (data->special_keys.rshf != 0xFF && (prevkeycode.special_keys.rshf != data->special_keys.rshf))
 	{
 		prevkeycode.special_keys.rshf = data->special_keys.rshf;
 		amikb_send(0x61, data->special_keys.rshf);
 	}
 
 	// RIGHT ALT
-	if (prevkeycode.special_keys.ralt != data->special_keys.ralt)
+	if (data->special_keys.ralt != 0xFF && (prevkeycode.special_keys.ralt != data->special_keys.ralt))
 	{
 		prevkeycode.special_keys.ralt = data->special_keys.ralt;
 		amikb_send(0x65, data->special_keys.ralt);
@@ -411,17 +285,10 @@ void amikb_process(keyboard_t *data)
 
 
 	// RIGHT GUI
-	if (prevkeycode.special_keys.rami != data->special_keys.rami)
+	if (data->special_keys.rami != 0xFF && (prevkeycode.special_keys.rami != data->special_keys.rami))
 	{
 		prevkeycode.special_keys.rami = data->special_keys.rami;
 		amikb_send(0x67, data->special_keys.rami);
-		if (data->special_keys.rami == 1)
-		{
-			maybe_reset++;
-		}
-		else
-		if (maybe_reset > 0)
-			maybe_reset--;
 	}
 
 
@@ -485,7 +352,7 @@ void amikb_process(keyboard_t *data)
 	    }
 	}
 
-	//send press keys
+	//Send press keys
 	for (i = 0; i < KEY_PRESSED_MAX; i++)
 	{
 
@@ -499,12 +366,9 @@ void amikb_process(keyboard_t *data)
 
 	//copy keys for next handling
 	for (i = 0; i < KEY_PRESSED_MAX; i++)
-		{
-		   prevkeycode.keyboard_codes[i] = data->keyboard_codes[i];
-
-		}
-
-
+	{
+		prevkeycode.keyboard_codes[i] = data->keyboard_codes[i];
+	}
 }
 
 

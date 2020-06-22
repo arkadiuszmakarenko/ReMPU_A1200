@@ -25,6 +25,8 @@
 /* USER CODE BEGIN Includes */
 #include "keyboard.h"
 #include "amiga.h"
+#include "dwt_delay.h"
+#include <string.h>
 
 /* USER CODE END Includes */
 
@@ -92,6 +94,8 @@ int main(void)
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
   DWT_Init();
+
+
   amikb_startup();
   keyboard_t keyboard;
 
@@ -107,11 +111,13 @@ int main(void)
 
 	  //clear
 	  memset(&keyboard,0,sizeof(keyboard));
+
+	  //As there is amiga code for 0x00 other value is requried to mark entry as empty.
 	  memset(&keyboard.keyboard_codes,0xFF,sizeof(keyboard.keyboard_codes));
+	  //
+	  memset(&keyboard.special_keys,0xFF,sizeof(keyboard.special_keys));
 	  ProcessKeyboard(&keyboard);
 	  amikb_process(&keyboard);
-
-
   }
   /* USER CODE END 3 */
 }
